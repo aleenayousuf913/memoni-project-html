@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Memoni Dictionary Project</title>
+    <!-- We're using Roboto font because it looks nice and clean -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic page setup */
+        body {
+            font-family: 'Roboto', sans-serif; /* Using our chosen font */
+            background-color: #ffffff; /* Just a clean white background */
+            display: flex; /* Helps us center things */
+            justify-content: center; /* Centers horizontally */
+            align-items: flex-start; /* Keeps content at the top initially */
+            min-height: 100vh; /* Makes sure the page takes up the whole screen height */
+            padding: 20px; /* A little space around the edges */
+            box-sizing: border-box; /* Makes padding behave nicely */
+        }
+
+        /* The main box holding everything */
+        .container {
+            max-width: 800px; /* Not too wide on big screens */
+            width: 100%; /* Takes up all available width on smaller screens */
+            background-color: #ffffff; /* White inside too */
+            border-radius: 12px; /* Nicely rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* A subtle shadow to make it pop */
+            padding: 30px; /* Space inside the box */
+            margin-top: 50px; /* Pushes it down a bit from the very top */
+        }
+
+        /* What the main titles look like */
+        h1 {
+            font-size: 2.25rem; /* Pretty big text */
+            font-weight: 700; /* Bold! */
+            text-align: center; /* Centered text */
+            color: #1f2937; /* Dark gray color */
+            margin-bottom: 1rem; /* Space below the title */
+        }
+
+        /* The welcome message paragraph */
+        .welcome-text {
+            text-align: center; /* Centered text */
+            color: #4b5563; /* A bit lighter gray */
+            margin-bottom: 2rem; /* More space below */
+            font-size: 0.95rem; /* Just a tiny bit smaller than normal text */
+            line-height: 1.6; /* Makes lines a bit taller for readability */
+        }
+
+        /* The little italic note under search bars */
+        .italic-note {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2.5rem;
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+
+        /* How the search input box looks */
+        .search-input {
+            border: 2px solid #e2e8f0; /* A soft grey border */
+            transition: border-color 0.3s ease; /* Smooth color change when you click it */
+            flex-grow: 1; /* Makes it take up available space in its row */
+            padding: 0.75rem; /* Space inside the input */
+            border-radius: 0.5rem; /* Rounded corners for the input */
+            font-size: 1.125rem; /* Bigger text inside */
+        }
+        /* What happens when you focus on the search input */
+        .search-input:focus {
+            border-color: #6366f1; /* Border turns indigo */
+            outline: none; /* Removes the default outline */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* A light glow */
+        }
+
+        /* Styles for all the main buttons */
+        .action-button {
+            background-color: #6366f1; /* Indigo color */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth changes for hover/click */
+            padding: 12px 24px; /* Space inside the button */
+            border-radius: 8px; /* Rounded button corners */
+            font-weight: 600; /* A bit bold */
+            color: #FFFFFF; /* White text */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* A small shadow */
+            border: none; /* No ugly border */
+            cursor: pointer; /* Shows a hand when you hover */
+        }
+        /* What happens when you hover over a button */
+        .action-button:hover {
+            background-color: #4f46e5; /* Darker indigo */
+            transform: translateY(-1px); /* Moves up slightly */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Bigger shadow */
+        }
+        /* What happens when you click a button */
+        .action-button:active {
+            transform: translateY(0); /* Moves back down */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Smaller shadow */
+        }
+
+        /* How each definition card looks */
+        .definition-card {
+            background-color: #f8fafc; /* Very light blue-gray background */
+            border-left: 4px solid #6366f1; /* A cool indigo line on the left */
+            border-radius: 8px; /* Rounded corners */
+            padding: 20px; /* Space inside the card */
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05); /* Soft shadow */
+        }
+        /* The word itself in the definition card */
+        .definition-card h2 {
+            font-size: 1.875rem; /* Big text */
+            font-weight: 700; /* Bold */
+            color: #1f2937; /* Dark gray */
+            margin-bottom: 0.5rem; /* Space below */
+            text-transform: capitalize; /* Makes the first letter big */
+        }
+        /* The "part of speech" (like "verb" or "noun") */
+        .part-of-speech {
+            color: #4f46e5; /* Indigo color */
+            font-size: 1.25rem; /* Medium-large text */
+            font-weight: 600; /* Semi-bold */
+            margin-bottom: 0.5rem;
+        }
+        /* Example sentences */
+        .example-text {
+            color: #475569; /* Slate gray */
+            font-style: italic; /* Italic text */
+            font-size: 0.875rem; /* Small text */
+            margin-top: 0.25rem;
+        }
+        /* Phonetic spelling (if we had it) */
+        .phonetic-text {
+            color: #64748b; /* Another shade of gray */
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        /* General style for message boxes (like "word not found") */
+        .message-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        /* Info messages (blue) */
+        .message-box.info {
+            background-color: #e0f2fe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+        /* Error messages (red) */
+        .message-box.error {
+            background-color: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+        }
+        /* Success messages (green) */
+        .message-box.success {
+            background-color: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Hides pages by default */
+        .page-section {
+            display: none;
+        }
+        /* Shows the active page */
+        .page-section.active {
+            display: block;
+        }
+
+        /* Buttons on the welcome page */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+            gap: 16px; /* Space between buttons */
+            justify-content: center; /* Centers buttons */
+            margin-top: 40px;
+        }
+
+        /* Space between dictionary results */
+        .results-container {
+            margin-top: 1.5rem;
+        }
+        .results-container > div + div { /* Adds space between definition cards */
+            margin-top: 1.5rem;
+        }
+
+        /* Back buttons at the bottom of pages */
+        .back-button {
+            margin-top: 2rem;
+        }
+
+        /* How the search input and button line up */
+        .search-flex-group {
+            display: flex;
+            flex-direction: column; /* Stacks them on top of each other by default */
+            gap: 1rem; /* Space between input and button */
+            margin-bottom: 2rem;
+        }
+
+        /* For bigger screens, put the search input and button side-by-side */
+        @media (min-width: 640px) {
+            .search-flex-group {
+                flex-direction: row;
+            }
+        }
+
+        /* Styles for the grammar lesson sections */
+        .lesson-section {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+        }
+        .lesson-section h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .lesson-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #444;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        .lesson-section p, .lesson-section ul {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .lesson-section ul {
+            list-style-type: disc; /* Bullet points */
+            padding-left: 25px;
+        }
+        .lesson-section li {
+            margin-bottom: 5px;
+        }
+        .lesson-example {
+            background-color: #eff6ff;
+            border-left: 3px solid #60a5fa;
+            padding: 10px 15px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .lesson-example strong {
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- The very first page you see -->
+        <div id="welcomePage" class="page-section active">
+            <h1>Welcome to the First Memoni Dictionary! </h1>
+            <p class="welcome-text">
+                Every language has an established grammar to enable an unfamiliar person the ability to learn. Unfortunately, Memoni is not a language. It is only a boli (oral language). Now that we have started to convert this boli into a language, we have to develop an understanding of basic principles of grammar. To do this, I will use the roman script to write Memoni. 
+            </p>
+
+            <div class="button-group">
+                <button id="verbDictButton" class="action-button">
+                    Verb Dictionary
+                </button>
+                <button id="nounDictButton" class="action-button">
+                    General Dictionary
+                </button>
+                <button id="grammarButton" class="action-button">
+                    Grammar Lessons
+                </button>
+            </div>
+        </div>
+
+        <!-- The page for searching verbs -->
+        <div id="verbDictionaryPage" class="page-section">
+            <h1>Memoni Verb Dictionary</h1>
+            <p class="italic-note">
+                (Search English verbs like 'arrive', 'ask', or 'become' to find their Memoni translation.)
+            </p>
+            <div class="search-flex-group">
+                <input
+                    type="text"
+                    id="verbWordInput"
+                    placeholder="Search English verbs..."
+                    class="search-input"
+                >
+                <button
+                    id="verbSearchButton"
+                    class="action-button"
+                >
+                    Search
+                </button>
+            </div>
+            <div id="verbMessageBox" class="message-box info hidden"></div>
+            <div id="verbResultsContainer" class="results-container"></div>
+            <button id="backToWelcomeFromVerb" class="action-button back-button">
+                Back to Welcome
+            </button>
+        </div>
+
+        <!-- The page for searching general words (nouns, etc.) -->
+        <div id="nounDictionaryPage" class="page-section">
+            <h1>Memoni General Dictionary</h1>
+            <p class="italic-note">
+                (Search English words like 'apple', 'bag', or 'boy' to find their Memoni translation.)
+            </p>
+            <div class="search-flex-group">
+                <input
+                    type="text"
+                    id="nounWordInput"
+                    placeholder="Search English words..."
+                    class="search-input"
+                >
+                <button
+                    id="nounSearchButton"
+                    class="action-button"
+                >
+                    Search
+                </button>
+            </div>
+            <div id="nounMessageBox" class="message-box info hidden"></div>
+            <div id="nounResultsContainer" class="results-container"></div>
+            <button id="backToWelcomeFromNoun" class="action-button back-button">
+                Back to Welcome
+            </button>
+        </div>
+
+        <!-- The page with grammar lessons -->
+        <div id="grammarLessonsPage" class="page-section">
+            <h1>Memoni Grammar Lessons</h1>
+
+            <div class="lesson-section">
+                <h2>Lesson 1 - Sentence Structure</h2>
+                <p>Sentences require both a subject and a verb. The subject is the noun or pronoun that is doing or being. The verb is the action or state of being. Ex: Aziz eats. In the sentence, Aziz is the subject who is ‘doing’ the verb (eating). In English, the subject comes first, then the verb, and lastly the object (SVO structure). In Memoni, sentences follow the SOV structure (subject, object, verb).</p>
+                <div class="lesson-example">
+                    <p><strong>Memoni:</strong> Latif bhaoo bimaar ae.</p>
+                    <p><strong>Literal Translation:</strong> Latif very ill is.</p>
+                    <p><strong>English:</strong> Latif is very ill.</p>
+                </div>
+            </div>
+
+            <div class="lesson-section">
+                <h2>Lesson 2 - Sentence Structure in Interrogative Sentences</h2>
+                <p>The same SOV structure is seen in interrogative sentences.</p>
+                <div class="lesson-example">
+                    <p><strong>Memoni:</strong> Oo kare ae?</p>
+                    <p><strong>Translation:</strong> He who is</p>
+                    <p><strong>English:</strong> Who is he?</p>
+                </div>
+                <div class="lesson-example">
+                    <p><strong>Memoni:</strong> Ee kuro ae?</p>
+                    <p><strong>Translation:</strong> This what is</p>
+                    <p><strong>English:</strong> What is this?</p>
+                </div>
+                <div class="lesson-example">
+                    <p><strong>Memoni:</strong> Chokro kida aee?</p>
+                    <p><strong>Translation:</strong> Boy where is</p>
+                    <p><strong>English:</strong> Where is the boy?</p>
+                </div>
+            </div>
+
+            <div class="lesson-section">
+                <h2>Lesson 3 - Nouns</h2>
+                <ul>
+                    <li>All nouns have a gender (m or f) and singular (s)/plural (p) forms.</li>
+                    <div class="lesson-example">
+                        <p><strong>Ex:</strong> Boy = Chhokro (ms) or Chokra (mp)</p>
+                        <p>Girl = Chhokree (fs) or Chokriyun (fp)</p>
+                    </div>
+                    <li>Words ending in vowel sound ‘o’ are typically masculine and words ending with the vowel sound ‘ee’ are typically feminine.</li>
+                    <li>Use our dictionary to find more nouns and practice putting them in their male, female, singular, and plural forms.</li>
+                </ul>
+            </div>
+
+            <div class="lesson-section">
+                <h2>Lesson 4 - Subject Pronouns</h2>
+                <p>Pronouns are words that take the place of nouns. Some common pronouns used in Memoni are:</p>
+                <ul>
+                    <li>First Person Singular (I) - <strong>AauN</strong></li>
+                    <li>First Person Plural (We) - <strong>Asaan</strong></li>
+                    <li>Second Person Singular (you) - <strong>Tu</strong> (Children/close friends) or <strong>Aaen</strong> (adults/strangers)</li>
+                    <li>Second Person Plural (y’all) - <strong>AaeN</strong></li>
+                    <li>Third Person Pronouns (He/She/It/This/These/That/Those) - <strong>ee/hee</strong> (object or person is near) or <strong>oo/hoo</strong> (object or person is far)</li>
+                    <li>Third Person Plural (They) - <strong>OuN</strong></li>
+                </ul>
+                <p>However, it is very common for the personal pronoun to be omitted in speaking. You can tell the subject of the sentence by the verb conjugation (Lesson 5).</p>
+                <div class="lesson-example">
+                    <p><strong>Ex:</strong> Instead of saying AauN Piyato (I drink), you can just say Piyato and you will be understood.</p>
+                </div>
+            </div>
+
+            <div class="lesson-section">
+                <h2>Lesson 5 - Forming the Present Tense (regular)</h2>
+                <p>Verbs come in their infinitive tense, which can be used as the basis to form sentences. In this scenario we use a regular verb - ‘to sell.’ Please note irregular verbs follow different rules.</p>
+                <p>Infinitive Tense: To Sell - <strong>Vechnu</strong></p>
+                <p>To create the root verb from the infinitive, remove the ‘nu’ ending.</p>
+                <div class="lesson-example">
+                    <p><strong>Ex:</strong> Root verb: Sell = <strong>Vech</strong></p>
+                </div>
+                <p>To form the present tense, the root verb is taken and endings are added depending on the personal pronoun used. This process is known as conjugation.</p>
+                <ul>
+                    <li>I sell : Vech + <strong>ato/ati</strong></li>
+                    <li>You sell: Vech + <strong>ete</strong></li>
+                    <li>He/She sells: Vech + <strong>Eto/Eti</strong></li>
+                    <li>We Sell: Vech + <strong>uta</strong></li>
+                    <li>You all sell: Vech + <strong>ota</strong></li>
+                    <li>They Sell: Vech + <strong>enta/entyu</strong></li>
+                </ul>
+                <p>Half have different endings for feminine tenses, while the other half are the same as the masculine endings. If a group is made up of both men and women, the masculine ending is used.</p>
+            </div>
+
+            <div class="lesson-section">
+                <h2>Lesson 6 - To Do</h2>
+                <p>The verb ‘To Do’ is an easy way to express action. There are many occasions where in Memon, you may not know the verb, but are able to express the action using the verb ‘To Do’ plus the noun. For example:</p>
+                <div class="lesson-example">
+                    <p><strong>Memon:</strong> Ee saaf kareti</p>
+                    <p><strong>Translation:</strong> She clean does.</p>
+                    <p><strong>English:</strong> She cleans.</p>
+                </div>
+                <div class="lesson-example">
+                    <p><strong>Memon:</strong> Mike phone kareto</p>
+                    <p><strong>Translation:</strong> Me phone he does</p>
+                    <p><strong>English:</strong> He phones me.</p>
+                </div>
+                <div class="lesson-example">
+                    <p><strong>Memon:</strong> AauN kam karato.</p>
+                    <p><strong>Translation:</strong> I work do.</p>
+                    <p><strong>English:</strong> I work.</p>
+                </div>
+                <p>See below conjugations of the verb ‘to do’ in the non-present tenses</p>
+                <p><strong>Kar</strong> = To do</p>
+                <ul>
+                    <li>I was doing it: <strong>Karnivis</strong></li>
+                    <li>I was going to do it: <strong>Karanjeevis</strong></li>
+                    <li>I will do it: <strong>Karniseh</strong></li>
+                    <li>I was doing it: <strong>Karniviseh</strong></li>
+                    <li>I did it: <strong>Kariviseh</strong></li>
+                    <li>I did (m): <strong>Karyoseeh</strong></li>
+                    <li>He did it: <strong>Karyoh</strong></li>
+                    <li>She did it: <strong>Kareeh</strong></li>
+                    <li>We should do it: <strong>Kareeganooh</strong></li>
+                    <li>We were doing it: <strong>Karnavaseeh</strong></li>
+                    <li>Get it done: <strong>Karaygan</strong></li>
+                    <li>She’s doing it: <strong>Karetheeh</strong></li>
+                    <li>Do it: <strong>Kareegan</strong></li>
+                    <li>I’m doing it: <strong>Karatheeh</strong></li>
+                    <li>He’s doing it: <strong>Karethoh</strong></li>
+                </ul>
+                <h3>Note</h3>
+                <p>These are just a few basic grammar lessons. More lessons dealing with different verb tenses, complex parts of speech, and pronouns (direct, object, reflexive) are being developed.</p>
+            </div>
+
+            <button id="backToWelcomeFromGrammar" class="action-button back-button">
+                Back to Welcome
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Our word lists! We're keeping them simple, just objects.
+        // This is where all the Memoni verbs are stored.
+        const verbVocabulary = {
+            "arrive": { word: "Arrive", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Pugnu" }] }] },
+            "ask": { word: "Ask", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Puchnuh" }] }] },
+            "become": { word: "Become", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bannu" }] }] },
+            "beg": { word: "Beg", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Mangnu" }] }] },
+            "bite": { word: "Bite", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Batko Barnu" }] }] },
+            "break": { word: "Break", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Thornu" }] }] },
+            "brush": { word: "Brush", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Maanjiginu" }] }] },
+            "build": { word: "Build", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bhandainu" }] }] },
+            "burn": { word: "Burn", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Baarnu" }] }] },
+            "catch": { word: "Catch", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Pakkarnu" }] }] },
+            "change": { word: "Change", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Badalnu" }] }] },
+            "clean": { word: "Clean", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Saaf Karnu" }] }] },
+            "climb": { word: "Climb", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Chaarnu" }] }] },
+            "close": { word: "Close", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bandh Karnu" }] }] },
+            "comb": { word: "Comb", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Waarnu" }] }] },
+            "come": { word: "Come", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Achnu" }] }] },
+            "cook": { word: "Cook", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Pakainu/Randnu" }] }] },
+            "cover": { word: "Cover", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Dakhnu" }] }] },
+            "cross": { word: "Cross", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Paar Karnu" }] }] },
+            "cry": { word: "Cry", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Roonu" }] }] },
+            "cut": { word: "Cut", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kapnu" }] }] },
+            "dig": { word: "Dig", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Khodnu" }] }] },
+            "do": { word: "Do", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kar" }] }] },
+            "dream": { word: "Dream", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sapna Naarnu" }] }] },
+            "drink": { word: "Drink", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Peenu" }] }] },
+            "drip": { word: "Drip", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Tapaknu" }] }] },
+            "drive/ride": { word: "Drive/Ride", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Haaknu" }] }] },
+            "drop": { word: "Drop", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Chadnu" }] }] },
+            "dry": { word: "Dry", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sukaynu" }] }] },
+            "earn": { word: "Earn", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kamaynu" }] }] },
+            "eat": { word: "Eat", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Khenu" }] }] },
+            "enter": { word: "Enter", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Girnu" }] }] },
+            "explain": { word: "Explain", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Samjainu" }] }] },
+            "falldown (fruits)": { word: "Falldown (fruits)", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Tapaknu" }] }] },
+            "feed": { word: "Feed", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kharainu" }] }] },
+            "feel": { word: "Feel", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Mehsoos Karnu" }] }] },
+            "fly": { word: "Fly", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Udnu" }] }] },
+            "forget": { word: "Forget", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bulnu" }] }] },
+            "free": { word: "Free", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Chutnu" }] }] },
+            "give": { word: "Give", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Deenu / Winnu" }] }] },
+            "grow": { word: "Grow", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Vadhnu" }] }] },
+            "handle": { word: "Handle", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sambharnu" }] }] },
+            "hear": { word: "Hear", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sunnu" }] }] },
+            "hide": { word: "Hide", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Likaynu" }] }] },
+            "hit": { word: "Hit", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Maarnu" }] }] },
+            "kick": { word: "Kick", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Lath Maarnu" }] }] },
+            "laugh": { word: "Laugh", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Khilnu" }] }] },
+            "learn": { word: "Learn", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Siknu" }] }] },
+            "leave": { word: "Leave", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Nikarnu" }] }] },
+            "lie": { word: "Lie", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Khota Bolnu" }] }] },
+            "lift/carry": { word: "Lift/Carry", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Upaarnu" }] }] },
+            "like": { word: "Like", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Gamnu" }] }] },
+            "listen": { word: "Listen", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sunnu" }] }] },
+            "look": { word: "Look", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Naarnu" }] }] },
+            "make": { word: "Make", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bhanainu" }] }] },
+            "move": { word: "Move", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Hatnu" }] }] },
+            "open": { word: "Open", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kholnu" }] }] },
+            "order": { word: "Order", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Mangaiynu" }] }] },
+            "pay": { word: "Pay", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bharnu" }] }] },
+            "plant": { word: "Plant", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Ugainu" }] }] },
+            "play": { word: "Play", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Ramnuh" }] }] },
+            "pray": { word: "Pray", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Parnu" }] }] },
+            "pull": { word: "Pull", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kechnu" }] }] },
+            "push": { word: "Push", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Dakkho Marnu" }] }] },
+            "read": { word: "Read", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Waachnu" }] }] },
+            "recognize": { word: "Recognize", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Varthnu/Orakhnu" }] }] },
+            "ruin": { word: "Ruin", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bugarnu" }] }] },
+            "run": { word: "Run", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bhagnu" }] }] },
+            "scrub": { word: "Scrub", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Ghasnuh" }] }] },
+            "see": { word: "See", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Naarnuh" }] }] },
+            "send": { word: "Send", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Mokalnu" }] }] },
+            "set/keep": { word: "Set/Keep", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Rakhnuh" }] }] },
+            "sew": { word: "Sew", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Subnu" }] }] },
+            "shout": { word: "Shout", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Raaruh Paarnuh" }] }] },
+            "show": { word: "Show", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Dekharnu / Bataarnu" }] }] },
+            "sit": { word: "Sit", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Whenu" }] }] },
+            "sleep": { word: "Sleep", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sumnu" }] }] },
+            "speak": { word: "Speak", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Bolnu" }] }] },
+            "stand": { word: "Stand", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Ubho Rhenu" }] }] },
+            "start": { word: "Start", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Chalu" }] }] },
+            "stick": { word: "Stick", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Chotnu" }] }] },
+            "take": { word: "Take", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Ghinnu" }] }] },
+            "take out": { word: "Take Out", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Khadnu" }] }] },
+            "talk": { word: "Talk", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Gaal Karnu" }] }] },
+            "tease": { word: "Tease", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Cherrnu" }] }] },
+            "tell": { word: "Tell", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Chohnu" }] }] },
+            "think": { word: "Think", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Sochnu" }] }] },
+            "throw": { word: "Throw", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Fehknuh" }] }] },
+            "touch": { word: "Touch", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Adnu" }] }] },
+            "use": { word: "Use", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Vaaparnu" }] }] },
+            "wake up": { word: "Wake Up", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Uthnu" }] }] },
+            "walk": { word: "Walk", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Halnu" }] }] },
+            "wash": { word: "Wash", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Durainu" }] }] },
+            "wear": { word: "Wear", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Perrnu" }] }] },
+            "work": { word: "Work", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Kam Karnu" }] }] },
+            "write": { word: "Write", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Liknu" }] }] }
+        };
+
+        // And here's the list for general words (nouns and other stuff).
+        const generalVocabulary = {
+            "a/the": { word: "A/the", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Akro (m) or Akri (f)" }] }] },
+            "abstinence": { word: "Abstinence", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Taqwao" }] }] },
+            "accident": { word: "Accident", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Haadiso" }] }] },
+            "accidentally": { word: "Accidentally", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Ittifaaq sei" }] }] },
+            "across": { word: "Across", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Samei" }] }] },
+            "after": { word: "After", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Baad" }] }] },
+            "age/era": { word: "Age/Era", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Zamaano" }] }] },
+            "agreeable": { word: "Agreeable", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Gawaarao" }] }] },
+            "agreement": { word: "Agreement", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Faisalo" }] }] },
+            "alive": { word: "Alive", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Zindo" }] }] },
+            "all": { word: "All", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Bedhay" }] }] },
+            "almond": { word: "Almond", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Badaam" }] }] },
+            "also": { word: "Also", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Bih" }] }] },
+            "always": { word: "Always", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Hameesah" }] }] },
+            "ambitious": { word: "Ambitious", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Jabreeh" }] }] },
+            "among": { word: "Among", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Sathmei" }] }] },
+            "amusement": { word: "Amusement", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Tamaasho" }] }] },
+            "and": { word: "And", meanings: [{ partOfSpeech: "conjunction", definitions: [{ definition: "Neh" }] }] },
+            "anger": { word: "Anger", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ghusso" }] }] },
+            "angrily": { word: "Angrily", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Ghusay Mei" }] }] },
+            "another": { word: "Another", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Beji" }] }] },
+            "answer": { word: "Answer", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Javaab" }] }] },
+            "any": { word: "Any", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Koibi" }] }] },
+            "anytime/whenever": { word: "Anytime/Whenever", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Jaddeh" }] }] },
+            "apple": { word: "Apple", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Safarjan" }] }] },
+            "attack": { word: "Attack", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Hamlo" }] }] },
+            "attention": { word: "Attention", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Daadh" }] }] },
+            "bag": { word: "Bag", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Theli (f)" }] }] },
+            "bags": { word: "Bags", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thelion (f)" }] }] },
+            "banana": { word: "Banana", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kero" }] }] },
+            "bananas": { word: "Bananas", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kera" }] }] },
+            "because": { word: "Because", meanings: [{ partOfSpeech: "conjunction", definitions: [{ definition: "Kreh Leh" }] }] },
+            "bed": { word: "Bed", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Palang/Khatlo" }] }] },
+            "beginning": { word: "Beginning", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shuruwat" }] }] },
+            "behind": { word: "Behind", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Wasei" }] }] },
+            "below": { word: "Below", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Neechei" }] }] },
+            "benefit": { word: "Benefit", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Faaido" }] }] },
+            "best": { word: "Best", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Assal" }] }] },
+            "bigger": { word: "Bigger", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Vaddoh" }] }] },
+            "bitter": { word: "Bitter", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Kerwo (m) or Kerwy (f)" }] }] },
+            "black": { word: "Black", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Kari (f) or Karo (m)" }] }] },
+            "blanket": { word: "Blanket", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dabro" }] }] },
+            "blaze": { word: "Blaze", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shu’lo" }] }] },
+            "blood": { word: "Blood", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Loi" }] }] },
+            "body": { word: "Body", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dhar" }] }] },
+            "book": { word: "Book", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "chopri (f)" }] }] },
+            "both": { word: "Both", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Boi" }] }] },
+            "bouquet": { word: "Bouquet", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Guldasto" }] }] },
+            "boy": { word: "Boy", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chhokro (ms), Chokra (mp)" }] }] },
+            "business": { word: "Business", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dhando" }] }] },
+            "but": { word: "But", meanings: [{ partOfSpeech: "conjunction", definitions: [{ definition: "Magar" }] }] },
+            "calamity": { word: "Calamity", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Haadiso" }] }] },
+            "calmy": { word: "Calmy", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Aastei" }] }] },
+            "candle": { word: "Candle", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shama’" }] }] },
+            "carpet": { word: "Carpet", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Galicho (m)" }] }] },
+            "carrot": { word: "Carrot", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Gezor (m)" }] }] },
+            "chai (tea)": { word: "Chai (tea)", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Cha" }] }] },
+            "chair": { word: "Chair", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kurshi (f)" }] }] },
+            "chance": { word: "Chance", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Mauqo" }] }] },
+            "chest": { word: "Chest", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Seeno" }] }] },
+            "chicken": { word: "Chicken", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Cockro (m)" }] }] },
+            "child": { word: "Child", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bacho" }] }] },
+            "class (social)": { word: "Class (Social)", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Martabo" }] }] },
+            "clever": { word: "Clever", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Ushyaar" }] }] },
+            "close by": { word: "Close by", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Pafupi" }] }] },
+            "clothes": { word: "Clothes", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Lugrah" }] }] },
+            "clutch/possession": { word: "Clutch/Possession", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Qabzo" }] }] },
+            "cold": { word: "Cold", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Thando (m) / Thandi (f)" }] }] },
+            "collision": { word: "Collision", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sadmo" }] }] },
+            "commencement": { word: "Commencement", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Suruwat" }] }] },
+            "complaint": { word: "Complaint", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shikwo" }] }] },
+            "continuation/chain": { word: "Continuation/Chain", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Silsilo" }] }] },
+            "courage": { word: "Courage", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Hausalo" }] }] },
+            "concerning": { word: "Concerning", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Mamlay mei" }] }] },
+            "congregation": { word: "Congregation", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Majmo" }] }] },
+            "conversation": { word: "Conversation", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Gaal" }] }] },
+            "cord": { word: "Cord", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rasi" }] }] },
+            "corner": { word: "Corner", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kuuneh" }] }] },
+            "counterfeit": { word: "Counterfeit", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Ja’ly" }] }] },
+            "craft/trade": { word: "Craft/Trade", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Huner" }] }] },
+            "crowd": { word: "Crowd", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Majmo" }] }] },
+            "culture": { word: "Culture", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Siqaafat" }] }] },
+            "cupboard": { word: "Cupboard", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kabaat" }] }] },
+            "cure": { word: "Cure", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chaaro" }] }] },
+            "custody": { word: "Custody", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Hawaalo" }] }] },
+            "custom": { word: "Custom", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Qaa’ido" }] }] },
+            "daughter (nickname)": { word: "Daughter (nickname)", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bai Ma" }] }] },
+            "daughter in law": { word: "Daughter in Law", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Nuh" }] }] },
+            "dawn": { word: "Dawn", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sevar" }] }] },
+            "day": { word: "Day", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Deeh" }] }] },
+            "dead": { word: "Dead", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Merailo (m) or Meraily (f) / Mardo" }] }] },
+            "deceit/delusion": { word: "Deceit/Delusion", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dagho" }] }] },
+            "decision": { word: "Decision", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Faisalo" }] }] },
+            "decoration": { word: "Decoration", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sajawat" }] }] },
+            "desolate": { word: "Desolate", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Soono" }] }] },
+            "dice": { word: "Dice", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bachyo" }] }] },
+            "difference": { word: "Difference", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Fayr" }] }] },
+            "difficulties": { word: "Difficulties", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thkleef" }] }] },
+            "dirty": { word: "Dirty", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Gandaro (m) or Gandary (f)" }] }] },
+            "discourse": { word: "Discourse", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Khal Bol" }] }] },
+            "display/show": { word: "Display/Show", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Jalwo" }] }] },
+            "distance": { word: "Distance", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Faasilo" }] }] },
+            "door": { word: "Door", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dervajo (m)" }] }] },
+            "down": { word: "Down", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Nicheh" }] }] },
+            "dream": { word: "Dream", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sapne" }] }] },
+            "early": { word: "Early", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Vehla" }] }] },
+            "ears": { word: "Ears", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kaan" }] }] },
+            "edge/margin": { word: "Edge/Margin", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kinaaro" }] }] },
+            "egg": { word: "Egg", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ino (ms) or Ina (mp)" }] }] },
+            "empty": { word: "Empty", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Soono" }] }] },
+            "encouragement": { word: "Encouragement", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dilaaso" }] }] },
+            "enemy": { word: "Enemy", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dushman" }] }] },
+            "engagement": { word: "Engagement", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "MaNgni" }] }] },
+            "enjoyment": { word: "Enjoyment", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Mazo" }] }] },
+            "entertainment": { word: "Entertainment", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Tamaasho" }] }] },
+            "example": { word: "Example", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Namoono" }] }] },
+            "excellent": { word: "Excellent", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Assal" }] }] },
+            "excuse": { word: "Excuse", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bahaano" }] }] },
+            "existence": { word: "Existence", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "JeewaN" }] }] },
+            "experiment": { word: "Experiment", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Tajribo" }] }] },
+            "fable/tale": { word: "Fable/Tale", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Qisso" }] }] },
+            "face": { word: "Face", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Mu / Chero" }] }] },
+            "fast": { word: "Fast", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Taij" }] }] },
+            "fatigue/tiredness": { word: "Fatigue/Tiredness", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thakoroh" }] }] },
+            "fever": { word: "Fever", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bukhaar/Bero" }] }] },
+            "finger": { word: "Finger", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Aangreeh" }] }] },
+            "foreign": { word: "Foreign", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Begaanno" }] }] },
+            "foreign country": { word: "Foreign Country", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Pardesh" }] }] },
+            "free (not busy)": { word: "Free (not busy)", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Nivree" }] }] },
+            "fresh": { word: "Fresh", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Taazo" }] }] },
+            "fruit": { word: "Fruit", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Phel (m)" }] }] },
+            "flame": { word: "Flame", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shu’lo" }] }] },
+            "flash of light": { word: "Flash of Light", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shu’lo" }] }] },
+            "fly": { word: "Fly", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Makhi" }] }] },
+            "fun": { word: "Fun", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Mazo" }] }] },
+            "funeral": { word: "Funeral", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Janaazo" }] }] },
+            "garden": { word: "Garden", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Baghcho" }] }] },
+            "garlic": { word: "Garlic", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Lassan" }] }] },
+            "gift": { word: "Gift", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "ToHfo" }] }] },
+            "girl": { word: "Girl", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chhokree (fs), Chokriyun (fp)" }] }] },
+            "goal": { word: "Goal", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thikaano" }] }] },
+            "good": { word: "Good", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Saro (m) or Sari (f)" }] }] },
+            "good-hearted": { word: "Good-Hearted", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Dayyoh" }] }] },
+            "grape": { word: "Grape", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Drax" }] }] },
+            "grave": { word: "Grave", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Maqbaro" }] }] },
+            "green": { word: "Green", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Lili" }] }] },
+            "guests": { word: "Guests", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Mehman" }] }] },
+            "gun": { word: "Gun", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Banduk" }] }] },
+            "habit": { word: "Habit", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Aadat" }] }] },
+            "half": { word: "Half", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Addh" }] }] },
+            "happy": { word: "Happy", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Rajeeh / Khus" }] }] },
+            "happily": { word: "Happily", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Khusisay" }] }] },
+            "hard": { word: "Hard", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Sekhat" }] }] },
+            "harmony/symphony": { word: "Harmony/Symphony", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Taraanao" }] }] },
+            "here": { word: "Here", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Itay" }] }] },
+            "high": { word: "High", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Uncho (m) or Unchi (f)" }] }] },
+            "hijab": { word: "Hijab", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Pardo" }] }] },
+            "honey": { word: "Honey", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "MedH" }] }] },
+            "hour": { word: "Hour", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kalaak" }] }] },
+            "house": { word: "House", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ghar/Khaano" }] }] },
+            "hunger": { word: "Hunger", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bukh" }] }] },
+            "i": { word: "I", meanings: [{ partOfSpeech: "pronoun", definitions: [{ definition: "Aaun" }] }] },
+            "if": { word: "If", meanings: [{ partOfSpeech: "conjunction", definitions: [{ definition: "Agar" }] }] },
+            "importunity": { word: "Importunity", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Taqaazao" }] }] },
+            "in between": { word: "In Between", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Vich mei" }] }] },
+            "inside": { word: "Inside", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Andhar" }] }] },
+            "invasion": { word: "Invasion", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Hamlo" }] }] },
+            "joke/pleasantry": { word: "Joke/Pleasantry", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Lateefo" }] }] },
+            "junk/trash": { word: "Junk/Trash", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kachra" }] }] },
+            "jurisdiction": { word: "Jurisdiction", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ilaaqo" }] }] },
+            "keys": { word: "Keys", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chavi" }] }] },
+            "knife": { word: "Knife", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Churi" }] }] },
+            "knot/knuckle/joint": { word: "Knot/Knuckle/Joint", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Gatah" }] }] },
+            "last": { word: "Last", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Aakhiry" }] }] },
+            "letter": { word: "Letter", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kager" }] }] },
+            "lights": { word: "Lights", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Butthi" }] }] },
+            "limit": { word: "Limit", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kinaaro" }] }] },
+            "living": { word: "Living", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Zindo" }] }] },
+            "lonely": { word: "Lonely", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Soono" }] }] },
+            "long": { word: "Long", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Lombo (m) or Lombi (f)" }] }] },
+            "loose": { word: "Loose", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Dhilo (m) or Dhily (f)" }] }] },
+            "lost": { word: "Lost", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Khovaiviyo" }] }] },
+            "make": { word: "Make", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Banei" }] }] },
+            "man": { word: "Man", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Maru (m)" }] }] },
+            "mango": { word: "Mango", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Aamu/Keri" }] }] },
+            "mangos": { word: "Mangos", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Aama" }] }] },
+            "many": { word: "Many", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Bhawj" }] }] },
+            "marble": { word: "Marble", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sangei" }] }] },
+            "marketing": { word: "Marketing", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Saudo" }] }] },
+            "mean/vulgar": { word: "Mean/Vulgar", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Kameeno" }] }] },
+            "meaning": { word: "Meaning", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ma’nee" }] }] },
+            "meanwhile": { word: "Meanwhile", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Ehsoonih" }] }] },
+            "medicine": { word: "Medicine", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Davaah" }] }] },
+            "method": { word: "Method", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Saleeqo / Tariqo" }] }] },
+            "middle": { word: "Middle", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Vich" }] }] },
+            "milk": { word: "Milk", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kheer" }] }] },
+            "mind": { word: "Mind", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Maggaj" }] }] },
+            "minute/moment": { word: "Minute/Moment", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Lamho" }] }] },
+            "mirror": { word: "Mirror", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Aariso (m) or Aarise (f) / Seeso" }] }] },
+            "misfortune": { word: "Misfortune", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Haadiso" }] }] },
+            "money": { word: "Money", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Payso" }] }] },
+            "month": { word: "Month", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Maynoh" }] }] },
+            "more": { word: "More", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Biji" }] }] },
+            "morning": { word: "Morning", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sawarei / Sevar" }] }] },
+            "moth": { word: "Moth", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Parwaanao" }] }] },
+            "motive": { word: "Motive", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Waasto" }] }] },
+            "nail": { word: "Nail", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Nakh" }] }] },
+            "name": { word: "Name", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Naaloh" }] }] },
+            "native country": { word: "Native Country", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Desh / Watan" }] }] },
+            "near": { word: "Near", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Nejdik" }] }] },
+            "new": { word: "New", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Navo" }] }] },
+            "news": { word: "News", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Samachar" }] }] },
+            "newspaper": { word: "Newspaper", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chapo (m)" }] }] },
+            "next to": { word: "Next To", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Bajooh" }] }] },
+            "next morning": { word: "Next Morning", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kal Sawaray" }] }] },
+            "nice": { word: "Nice", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Saaro (m) or Sari (f)" }] }] },
+            "night": { word: "Night", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Raat" }] }] },
+            "no": { word: "No", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Na" }] }] },
+            "nonsense": { word: "Nonsense", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thuth" }] }] },
+            "note": { word: "Note", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kager" }] }] },
+            "nothing": { word: "Nothing", meanings: [{ partOfSpeech: "pronoun", definitions: [{ definition: "Keeh nah" }] }] },
+            "now": { word: "Now", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Inghry" }] }] },
+            "nowhere": { word: "Nowhere", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Kiday bi nah" }] }] },
+            "objective": { word: "Objective", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Iraadaho" }] }] },
+            "oil": { word: "Oil", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thel" }] }] },
+            "ointment": { word: "Ointment", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Malam" }] }] },
+            "one/a": { word: "One/a", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Akro (m) or Akry (f)" }] }] },
+            "onion": { word: "Onion", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Dungri" }] }] },
+            "only": { word: "Only", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Khaali" }] }] },
+            "opportunity": { word: "Opportunity", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Mauqo" }] }] },
+            "orange": { word: "Orange", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Santara/Musumbi" }] }] },
+            "outside": { word: "Outside", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Baarah" }] }] },
+            "pair": { word: "Pair", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Jori" }] }] },
+            "part/piece": { word: "Part/Piece", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "TukRo" }] }] },
+            "passion": { word: "Passion", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Jazbo" }] }] },
+            "peace": { word: "Peace", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sukh / Sukoon" }] }] },
+            "peeler knife": { word: "Peeler Knife", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chal Chillan Vari Churi" }] }] },
+            "picture/painting": { word: "Picture/Painting", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Photo" }] }] },
+            "piety": { word: "Piety", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Taqwao" }] }] },
+            "pincers": { word: "Pincers", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sansi" }] }] },
+            "pineapple": { word: "Pineapple", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ananas" }] }] },
+            "plate": { word: "Plate", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rikabi" }] }] },
+            "pleasant": { word: "Pleasant", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Gawaarao" }] }] },
+            "pomegranate": { word: "Pomegranate", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Daram" }] }] },
+            "poor": { word: "Poor", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Garib" }] }] },
+            "portion/share": { word: "Portion/Share", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Hisso" }] }] },
+            "potato": { word: "Potato", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Batato (m)" }] }] },
+            "poverty": { word: "Poverty", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Faaqo" }] }] },
+            "pretty": { word: "Pretty", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Sobari (f) or Sobaro (m)" }] }] },
+            "prince": { word: "Prince", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Shehzaado" }] }] },
+            "profession": { word: "Profession", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Huner" }] }] },
+            "proof": { word: "Proof", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Tajribo" }] }] },
+            "proper place": { word: "Proper Place", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Thikaano" }] }] },
+            "proposal": { word: "Proposal", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rishto" }] }] },
+            "prostration": { word: "Prostration", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sajdo" }] }] },
+            "quarrel": { word: "Quarrel", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Qisso" }] }] },
+            "queen": { word: "Queen", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rani" }] }] },
+            "rage": { word: "Rage", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Joss" }] }] },
+            "rain/rainy season": { word: "Rain/Rainy Season", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Barsaat/Versaad" }] }] },
+            "rainbow": { word: "Rainbow", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Khimmat" }] }] },
+            "reason": { word: "Reason", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bahaano" }] }] },
+            "red": { word: "Red", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Surkh / Lal" }] }] },
+            "relationship": { word: "Relationship", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rishto" }] }] },
+            "remedy": { word: "Remedy", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chaaro" }] }] },
+            "rent": { word: "Rent", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bhaare" }] }] },
+            "resignation": { word: "Resignation", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Istifo" }] }] },
+            "river bank": { word: "River Bank", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kinaaro" }] }] },
+            "road": { word: "Road", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Serakh" }] }] },
+            "robbery": { word: "Robbery", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Daako" }] }] },
+            "rolling pin": { word: "Rolling Pin", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Velnu" }] }] },
+            "rolling board": { word: "Rolling Board", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Paatlo" }] }] },
+            "room": { word: "Room", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kotthri" }] }] },
+            "rope": { word: "Rope", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rasi" }] }] },
+            "sad": { word: "Sad", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Gamhgin" }] }] },
+            "sample": { word: "Sample", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Namoono" }] }] },
+            "sandals": { word: "Sandals", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Champal" }] }] },
+            "saying": { word: "Saying", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ghaliyu" }] }] },
+            "seat": { word: "Seat", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Vyo" }] }] },
+            "see": { word: "See", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Naar" }] }] },
+            "series": { word: "Series", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Silsilo" }] }] },
+            "sermon": { word: "Sermon", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Khutbo" }] }] },
+            "shadow/shade": { word: "Shadow/Shade", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Saayo" }] }] },
+            "shame": { word: "Shame", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sharam" }] }] },
+            "shoe": { word: "Shoe", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Jooto" }] }] },
+            "shore": { word: "Shore", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Kinaaro" }] }] },
+            "significance": { word: "Significance", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ma’nee" }] }] },
+            "silence": { word: "Silence", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Sukh" }] }] },
+            "sister": { word: "Sister", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bhern" }] }] },
+            "slave/servant": { word: "Slave/Servant", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bando" }] }] },
+            "slow": { word: "Slow", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Aastheh" }] }] },
+            "slowly": { word: "Slowly", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Aasthei" }] }] },
+            "small": { word: "Small", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Nendho (m) or Nendhi (f)" }] }] },
+            "smaller": { word: "Smaller", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Nindoh" }] }] },
+            "smart": { word: "Smart", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Ghareeb" }] }] },
+            "smell": { word: "Smell", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Gandh" }] }] },
+            "(empty) space": { word: "(Empty) Space", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Jaggah" }] }] },
+            "spectacle": { word: "Spectacle", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Tamaasho" }] }] },
+            "splendour": { word: "Splendour", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Jalwo" }] }] },
+            "starvation": { word: "Starvation", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Faaqo" }] }] },
+            "stingy": { word: "Stingy", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Kanjoos" }] }] },
+            "stomach": { word: "Stomach", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Pett" }] }] },
+            "stove": { word: "Stove", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chullo" }] }] },
+            "straightaway": { word: "Straightaway", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Thruth" }] }] },
+            "strange": { word: "Strange", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Begaanno" }] }] },
+            "strength": { word: "Strength", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Himmath" }] }] },
+            "string": { word: "String", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Rasi" }] }] },
+            "suitcase": { word: "Suitcase", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Petti" }] }] },
+            "support": { word: "Support", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Saath" }] }] },
+            "sweat/perspiration": { word: "Sweat/Perspiration", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Pasino" }] }] },
+            "tall": { word: "Tall", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Lombo (m) or Lombi (f)" }] }] },
+            "tax collector": { word: "Tax Collector", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Zaamindar" }] }] },
+            "tears": { word: "Tears", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Aansoo" }] }] },
+            "temptation": { word: "Temptation", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Fitnoo" }] }] },
+            "telephone": { word: "Telephone", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Petti" }] }] },
+            "theif": { word: "Theif", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "chor" }] }] },
+            "then": { word: "Then", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Pachi" }] }] },
+            "thick": { word: "Thick", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Ganto (m) or Ganti (f)" }] }] },
+            "thin": { word: "Thin", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Petlo (m) or Petli (f)" }] }] },
+            "thing": { word: "Thing", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Cheej" }] }] },
+            "throne": { word: "Throne", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Takhto" }] }] },
+            "treasure": { word: "Treasure", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Khizaano" }] }] },
+            "tomb": { word: "Tomb", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Maqbaro" }] }] },
+            "tong": { word: "Tong", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chipyo" }] }] },
+            "too much": { word: "Too Much", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Ziyaado" }] }] },
+            "umbrella": { word: "Umbrella", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Chatry (f)" }] }] },
+            "understand": { word: "Understand", meanings: [{ partOfSpeech: "verb", definitions: [{ definition: "Samjhay" }] }] },
+            "unfortunate/dark": { word: "Unfortunate/Dark", meanings: [{ partOfSpeech: "adjective", definitions: [{ definition: "Siyaah/Karo" }] }] },
+            "up/above": { word: "Up/Above", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Matheh" }] }] },
+            "vegetables": { word: "Vegetables", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Bakalo (m)" }] }] },
+            "void": { word: "Void", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Soono" }] }] },
+            "vomit": { word: "Vomit", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ulti" }] }] },
+            "watch": { word: "Watch", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Garial" }] }] },
+            "watermelon": { word: "Watermelon", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Tarbuz" }] }] },
+            "we": { word: "We", meanings: [{ partOfSpeech: "pronoun", definitions: [{ definition: "Asaan" }] }] },
+            "week": { word: "Week", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Hafto" }] }] },
+            "welcome": { word: "Welcome", meanings: [{ partOfSpeech: "interjection", definitions: [{ definition: "Acho" }] }] },
+            "will/desire": { word: "Will/Desire", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Iraadaho" }] }] },
+            "wish": { word: "Wish", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Umeed" }] }] },
+            "with": { word: "With", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Begoh / Watay" }] }] },
+            "within": { word: "Within", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Weechmei" }] }] },
+            "without": { word: "Without", meanings: [{ partOfSpeech: "preposition", definitions: [{ definition: "Begoh Ney / Vegair" }] }] },
+            "woman": { word: "Woman", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "bairi (f)" }] }] },
+            "word": { word: "Word", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Ghaliyu" }] }] },
+            "worries": { word: "Worries", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Vyaadi" }] }] },
+            "year": { word: "Year", meanings: [{ partOfSpeech: "noun", definitions: [{ definition: "Vaar" }] }] },
+            "yesterday": { word: "Yesterday", meanings: [{ partOfSpeech: "adverb", definitions: [{ definition: "Vaykal" }] }] },
+            "you": { word: "You", meanings: [{ partOfSpeech: "pronoun", definitions: [{ definition: "Tu (informal) or Aaen (formal)" }] }] },
+            "you all": { word: "You All", meanings: [{ partOfSpeech: "pronoun", definitions: [{ definition: "Aaen" }] }] },
+            "your": { word: "Your", meanings: [{ partOfSpeech: "determiner", definitions: [{ definition: "Tojo (informal) or Aenjo (formal)" }] }] }
+        };
+
+        // Grabbing all the pieces of our webpage we'll need to control
+        const welcomePage = document.getElementById('welcomePage');
+        const verbDictionaryPage = document.getElementById('verbDictionaryPage');
+        const nounDictionaryPage = document.getElementById('nounDictionaryPage');
+        const grammarLessonsPage = document.getElementById('grammarLessonsPage');
+
+        // Buttons on the welcome screen
+        const verbDictButton = document.getElementById('verbDictButton');
+        const nounDictButton = document.getElementById('nounDictButton');
+        const grammarButton = document.getElementById('grammarButton');
+
+        // Stuff for the Verb Dictionary page
+        const verbWordInput = document.getElementById('verbWordInput');
+        const verbSearchButton = document.getElementById('verbSearchButton');
+        const verbResultsContainer = document.getElementById('verbResultsContainer');
+        const verbMessageBox = document.getElementById('verbMessageBox');
+        const backToWelcomeFromVerb = document.getElementById('backToWelcomeFromVerb');
+
+        // Stuff for the General Dictionary page
+        const nounWordInput = document.getElementById('nounWordInput');
+        const nounSearchButton = document.getElementById('nounSearchButton');
+        const nounResultsContainer = document.getElementById('nounResultsContainer');
+        const nounMessageBox = document.getElementById('nounMessageBox');
+        const backToWelcomeFromNoun = document.getElementById('backToWelcomeFromNoun');
+
+        // Stuff for the Grammar Lessons page
+        const backToWelcomeFromGrammar = document.getElementById('backToWelcomeFromGrammar');
+
+        /**
+         * A simple function to switch which page is visible.
+         * It hides all pages first, then shows the one we want.
+         * @param {HTMLElement} pageToShow - The page element we want to make visible.
+         */
+        function showPage(pageToShow) {
+            const allPages = document.querySelectorAll('.page-section');
+            // Hide all pages
+            allPages.forEach(page => {
+                page.classList.remove('active');
+            });
+            // Show the one we clicked
+            pageToShow.classList.add('active');
+
+            // Also, let's clear out any old search results or messages when we switch pages
+            if (verbWordInput) verbWordInput.value = '';
+            if (nounWordInput) nounWordInput.value = '';
+            if (verbResultsContainer) verbResultsContainer.innerHTML = '';
+            if (nounResultsContainer) nounResultsContainer.innerHTML = '';
+            hideMessageBox(verbMessageBox);
+            hideMessageBox(nounMessageBox);
+        }
+
+        /**
+         * Shows a message in a special box, like "word not found" or "enter a word".
+         * @param {string} message - The text to show.
+         * @param {HTMLElement} messageBoxElement - Which message box to use.
+         * @param {string} type - What kind of message it is ('success', 'error', 'info').
+         */
+        function showMessageBox(message, messageBoxElement, type = 'info') {
+            if (!messageBoxElement) return; // Don't do anything if there's no message box
+
+            messageBoxElement.textContent = message; // Put the message text in
+            // Remove any old styling first to be safe
+            messageBoxElement.classList.remove('hidden', 'error', 'success', 'info');
+
+            // Add the right style based on the message type
+            if (type === 'error') {
+                messageBoxElement.classList.add('error');
+            } else if (type === 'success') {
+                messageBoxElement.classList.add('success');
+            } else {
+                messageBoxElement.classList.add('info');
+            }
+            messageBoxElement.classList.remove('hidden'); // Make sure it's visible
+        }
+
+        /**
+         * Hides the message box and clears its text.
+         * @param {HTMLElement} messageBoxElement - The message box to hide.
+         */
+        function hideMessageBox(messageBoxElement) {
+            if (!messageBoxElement) return;
+            messageBoxElement.classList.add('hidden'); // Just hide it
+            messageBoxElement.textContent = ''; // Clear the text
+        }
+
+        /**
+         * Looks up a word in our vocabulary list and shows its definition.
+         * If the word isn't found, it gives a friendly suggestion.
+         * @param {string} word - The word to search for.
+         * @param {object} vocabulary - Which word list to search in (verbs or general).
+         * @param {HTMLElement} messageBoxElement - Where to show messages.
+         * @param {HTMLElement} resultsContainerElement - Where to put the definition.
+         */
+        async function fetchDictionaryDefinition(word, vocabulary, messageBoxElement, resultsContainerElement) {
+            resultsContainerElement.innerHTML = ''; // Clear old results
+            hideMessageBox(messageBoxElement); // Hide any old messages
+
+            // If the user didn't type anything, tell them!
+            if (!word.trim()) {
+                showMessageBox("Oops! Please type a word to search.", messageBoxElement, "info");
+                return;
+            }
+
+            const normalizedWord = word.toLowerCase().trim(); // Make sure the word matches our list (lowercase, no extra spaces)
+            const definition = vocabulary[normalizedWord]; // Try to find the word in our list
+
+            if (definition) {
+                // If we found it, show it!
+                displayResults([definition], resultsContainerElement);
+                hideMessageBox(messageBoxElement); // No need for a message if we found it
+            } else {
+                // Uh oh, word not found! Let's give some friendly suggestions.
+                // We'll just grab the first 3 words from our list as examples.
+                let suggestedWords = Object.keys(vocabulary).slice(0, 3).map(key => `'${vocabulary[key].word}'`).join(', ');
+                showMessageBox("Hmm, couldn't find '" + word + "'. Maybe try something like " + suggestedWords + "?", messageBoxElement, "error");
+            }
+        }
+
+        /**
+         * Takes the definition data and displays it nicely on the page.
+         * @param {Array} data - The definition info for the word.
+         * @param {HTMLElement} resultsContainerElement - Where to add the definition card.
+         */
+        function displayResults(data, resultsContainerElement) {
+            // If there's no data, something went wrong or no definitions exist.
+            if (!data || data.length === 0) {
+                showMessageBox("No definitions found for this word. That's odd!", resultsContainerElement, "info");
+                return;
+            }
+
+            // Go through each definition we found (usually just one for our simple dictionary)
+            data.forEach(entry => {
+                const wordTitle = entry.word;
+                const phonetics = entry.phonetics; // We don't really use this much right now, but it's there!
+                const meanings = entry.meanings;
+
+                // Create a new box for this definition
+                const entryCard = document.createElement('div');
+                entryCard.className = 'definition-card'; // Give it our special card style
+
+                // Start building the HTML for inside the card
+                let htmlContent = `
+                    <h2>${wordTitle}</h2>
+                `;
+
+                // If there's phonetic info, add it
+                if (phonetics && phonetics.length > 0 && phonetics[0] && phonetics[0].text) {
+                    htmlContent += `<p class="phonetic-text">${phonetics[0].text}</p>`;
+                }
+
+                // Now, add all the meanings (like "verb", "noun", etc.)
+                if (meanings && meanings.length > 0) {
+                    meanings.forEach(meaning => {
+                        htmlContent += `
+                            <div>
+                                <h3 class="part-of-speech">${meaning.partOfSpeech}</h3>
+                                <ul>
+                        `;
+                        // And for each meaning, list its definitions and examples
+                        meaning.definitions.forEach(def => {
+                            htmlContent += `
+                                    <li>
+                                        <p>${def.definition}</p>
+                                        ${def.example ? `<p class="example-text">"${def.example}"</p>` : ''}
+                                    </li>
+                            `;
+                        });
+                        htmlContent += `</ul>`; // Close the list
+                        htmlContent += `</div>`; // Close the meaning section
+                    });
+                }
+
+                entryCard.innerHTML = htmlContent; // Put all the built HTML into our card
+                resultsContainerElement.appendChild(entryCard); // Add the card to the page!
+            });
+        }
+
+        // --- Setting up what happens when you click buttons or type ---
+
+        // When you click the "Verb Dictionary" button on the welcome page
+        verbDictButton.addEventListener('click', () => {
+            showPage(verbDictionaryPage);
+            showMessageBox("Ready to search verbs! Type an English verb here.", verbMessageBox, "info");
+        });
+
+        // When you click the "General Dictionary" button
+        nounDictButton.addEventListener('click', () => {
+            showPage(nounDictionaryPage);
+            showMessageBox("Time to search words! Type an English word here.", nounMessageBox, "info");
+        });
+
+        // When you click the "Grammar Lessons" button
+        grammarButton.addEventListener('click', () => {
+            showPage(grammarLessonsPage);
+        });
+
+        // Back buttons to return to the main welcome page
+        backToWelcomeFromVerb.addEventListener('click', () => {
+            showPage(welcomePage);
+        });
+        backToWelcomeFromNoun.addEventListener('click', () => {
+            showPage(welcomePage);
+        });
+        backToWelcomeFromGrammar.addEventListener('click', () => {
+            showPage(welcomePage);
+        });
+
+        // When you click the "Search" button on the verb page
+        verbSearchButton.addEventListener('click', () => {
+            fetchDictionaryDefinition(verbWordInput.value, verbVocabulary, verbMessageBox, verbResultsContainer);
+        });
+        // Or if you press Enter in the verb search box
+        verbWordInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                fetchDictionaryDefinition(verbWordInput.value, verbVocabulary, verbMessageBox, verbResultsContainer);
+            }
+        });
+
+        // When you click the "Search" button on the general dictionary page
+        nounSearchButton.addEventListener('click', () => {
+            fetchDictionaryDefinition(nounWordInput.value, generalVocabulary, nounMessageBox, nounResultsContainer);
+        });
+        // Or if you press Enter in the general dictionary search box
+        nounWordInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                fetchDictionaryDefinition(nounWordInput.value, generalVocabulary, nounMessageBox, nounResultsContainer);
+            }
+        });
+
+        // When the page first loads, make sure we're on the welcome screen
+        window.onload = () => {
+            showPage(welcomePage);
+        };
+    </script>
+</body>
+</html>
